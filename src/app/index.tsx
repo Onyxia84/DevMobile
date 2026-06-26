@@ -59,32 +59,37 @@ export default function IndexScreen() {
           data={expenses}
           keyExtractor={(item) => item.id.toString()}
           ListEmptyComponent={<Text style={styles.empty}>Aucune dépense trouvée.</Text>}
-          renderItem={({ item }) => (
-            <TouchableOpacity 
-              style={styles.item} 
-              onPress={() => setSelectedExpense(item)} // Ouvre la modal au clic
-            >
+                    renderItem={({ item }) => (
+            // On remplace le TouchableOpacity global par une View
+            <View style={styles.item}> 
               
-              <View style={styles.textContainer}>
-                <Text style={styles.desc}>{item.description}</Text>
-                <Text style={styles.amount}>{item.amount} €</Text>
-              </View>
-
-              {item.receipt_url ? (
-                <Image source={{ uri: item.receipt_url }} style={styles.thumbnail} />
-              ) : (
-                <View style={styles.noImagePlaceholder}>
-                  <Text style={{fontSize: 10, color: '#aaa'}}>Pas de ticket</Text>
+              {/* ZONE 1 : Pour ouvrir la Modal (Texte + Image) */}
+              <TouchableOpacity 
+                style={styles.contentContainer} 
+                onPress={() => setSelectedExpense(item)}
+              >
+                <View style={styles.textContainer}>
+                  <Text style={styles.desc}>{item.description}</Text>
+                  <Text style={styles.amount}>{item.amount} €</Text>
                 </View>
-              )}
 
-              {/* BOUTON SUPPRIMER */}
+                {item.receipt_url ? (
+                  <Image source={{ uri: item.receipt_url }} style={styles.thumbnail} />
+                ) : (
+                  <View style={styles.noImagePlaceholder}>
+                    <Text style={{fontSize: 10, color: '#aaa'}}>Pas de ticket</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+
+              {/* ZONE 2 : Bouton Supprimer isolé */}
               <TouchableOpacity onPress={() => deleteExpense(item.id)} style={styles.deleteButton}>
                 <Ionicons name="trash-outline" size={24} color="#dc3545" />
               </TouchableOpacity>
 
-            </TouchableOpacity>
+            </View>
           )}
+
         />
       )}
 
@@ -132,6 +137,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, 
     borderBottomColor: '#eee',
     backgroundColor: '#fff'
+  },
+  contentContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   textContainer: { flex: 1 },
   desc: { fontSize: 16, fontWeight: '500', color: '#000' },

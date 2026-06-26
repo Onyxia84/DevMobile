@@ -14,25 +14,56 @@ export default function AddScreen() {
   const router = useRouter();
 
   // Fonction pour ouvrir la galerie
+    // 1. Fonction pour afficher le menu de choix
+  function selectImageSource() {
+    Alert.alert(
+      "Ticket de caisse",
+      "Comment souhaites-tu ajouter ton ticket ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        { text: "Prendre une photo", onPress: takePhoto },
+        { text: "Choisir dans la galerie", onPress: pickImage }
+      ]
+    );
+  }
+
+  // 2. Fonction pour ouvrir l'appareil photo
+  async function takePhoto() {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Désolé', 'Nous avons besoin de la permission pour accéder à la caméra !');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 0.2, // <-- On baisse à 0.2 pour éviter le Timeout !
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  }
+
+  // 3. Fonction pour ouvrir la galerie
   async function pickImage() {
-    // Demander la permission (recommandé par le cours slide 18)
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Désolé', 'Nous avons besoin de la permission pour accéder à tes photos !');
       return;
     }
 
-    // Ouvrir la galerie
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      quality: 0.7, // Compressé comme sur le slide 19
+      quality: 0.2, // <-- Pareil ici
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri); // On sauvegarde le chemin de l'image
+      setImage(result.assets[0].uri);
     }
   }
+
 
     async function addExpense() {
     if (!description || !amount) {
@@ -101,11 +132,12 @@ export default function AddScreen() {
       <Text style={styles.label}>Montant (€)</Text>
       <TextInput style={styles.input} placeholder="Ex: 25.50" value={amount} onChangeText={setAmount} keyboardType="numeric" />
       
-      <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
+            <TouchableOpacity style={styles.imageButton} onPress={selectImageSource}>
         <Text style={styles.imageButtonText}>
-          {image ? 'Changer le ticket de caisse' : '📸 Ajouter un ticket (Photo)'}
+          {image ? 'Changer le ticket de caisse' : '📸 Ajouter un ticket'}
         </Text>
       </TouchableOpacity>
+
 
       {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
 
