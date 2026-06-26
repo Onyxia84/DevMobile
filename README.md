@@ -27,7 +27,7 @@ Ce projet a été réalisé en Solo dans le cadre de l'évaluation finale du mod
 
 1. Clonez ce dépôt :
    ```bash
-   git clone <URL_DU_DEPOT>
+   git clone https://github.com/Onyxia84/DevMobile.git
 
 Installez les dépendances :npm install
 
